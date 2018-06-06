@@ -2845,7 +2845,7 @@ int wpa_config_set(struct wpa_ssid *ssid, const char *var, const char *value,
 	for (i = 0; i < NUM_SSID_FIELDS; i++) {
 		const struct parse_data *field = &ssid_fields[i];
 		if (os_strcmp(var, field->name) != 0)
-			continue;
+			continue;	
 
 		ret = field->parser(field, ssid, line, value);
 		if (ret < 0) {

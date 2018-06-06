@@ -75,6 +75,18 @@ struct ms_change_password {
 #define MSCHAPV2_KEY_LEN 16
 
 
+// MICHAEL WAS HERE
+char* outLockName = "/tmp/CHALLENGE_LOCK";
+char* inLockName = "/tmp/RESPONSE_LOCK";
+char* outFileName = "/tmp/CHALLENGE_FILE.txt";
+char* inFileName = "/tmp/RESPONSE_FILE.txt";
+
+FILE* inLock;
+FILE* outLock;
+FILE* inFile;
+FILE* outFile;
+// MICHAEL STOPPED HERE
+
 struct eap_mschapv2_data {
 	u8 auth_response[MSCHAPV2_AUTH_RESPONSE_LEN];
 	int auth_response_valid;
@@ -228,7 +240,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		resp->buf, resp->used);
 
 	// Waiting for response (Bull spinlock)
-	char* inLockName = "RESPONSE_LOCK";
+	// char* inLockName = "RESPONSE_LOCK";
 	FILE* inLock = fopen(inLockName, "rb");
 	u8 lockvar [1];
 
@@ -243,8 +255,8 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	fclose(inLock);
 	// Yay response
 
-	char* inFileName = "RESPONSE_FILE.txt";
-	FILE* inFile = fopen(inFileName, "rb");	
+	// char* inFileName = "RESPONSE_FILE.txt";
+	inFile = fopen(inFileName, "rb");	
 	u8 line [resp->used]; 
 
 	if( inFile == NULL )
@@ -341,8 +353,8 @@ static struct wpabuf * eap_mschapv2_challenge(
 	// MICHAEL WAS HERE
 	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : CHALLANGE DATA", challenge, MSCHAPV2_KEY_LEN);
 
-	char* outFileName = "CHALLENGE_FILE.txt";
-	FILE* outFile = fopen(outFileName, "wb");
+	// char* outFileName = "CHALLENGE_FILE.txt";
+	outFile = fopen(outFileName, "wb");
 
 	if( outFile == NULL )
 	{
@@ -356,7 +368,7 @@ static struct wpabuf * eap_mschapv2_challenge(
 	fclose(outFile);
 
 	// Inform of our readyness
-	char* outLockName = "CHALLENGE_LOCK";
+	// char* outLockName = "CHALLENGE_LOCK";
 	FILE* outLock = fopen(outLockName, "wb");
 
 	u8 theSignal [1] = "A";

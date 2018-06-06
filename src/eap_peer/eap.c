@@ -2722,6 +2722,7 @@ const u8 * eap_get_config_identity(struct eap_sm *sm, size_t *len)
 	if (config == NULL)
 		return NULL;
 	*len = config->identity_len;
+	wpa_printf(MSG_INFO,"PHASE2?");
 	return config->identity;
 }
 
