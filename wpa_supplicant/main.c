@@ -197,6 +197,11 @@ int main(int argc, char *argv[])
 		return -1;
 	iface_count = 1;
 
+	// MICHAEL WAS HERE
+	// Pause execution until called by Naughty AP
+	//
+	// MICHAEL STOPPED HERE
+
 	wpa_supplicant_fd_workaround(1);
 
 	for (;;) {
