@@ -439,11 +439,13 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	// MICHAEL WAS HERE
 	if (mschapv2_verify_auth_response(data->auth_response, pos, len))
 		wpa_printf(MSG_INFO,"INVALID AUTHRESPONSE MYDUDE");
-	// MICHAEL STOPPED HERE
+	// THIS MAY BE BREAKING STUFF
+	// NOTTED THE mschapv2_verify_auth_response
 	if (!data->auth_response_valid ||
 	    !mschapv2_verify_auth_response(data->auth_response, pos, len)) {
 		wpa_printf(MSG_WARNING, "EAP-MSCHAPV2: Invalid authenticator "
 			   "response in success request");
+	// MICHAEL STOPPED HEE
 		ret->methodState = METHOD_DONE;
 		ret->decision = DECISION_FAIL;
 		return NULL;
