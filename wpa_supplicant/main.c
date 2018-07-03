@@ -197,10 +197,6 @@ int main(int argc, char *argv[])
 		return -1;
 	iface_count = 1;
 
-	// MICHAEL WAS HERE
-	// Pause execution until called by Naughty AP
-	//
-	// MICHAEL STOPPED HERE
 
 	wpa_supplicant_fd_workaround(1);
 
@@ -346,14 +342,82 @@ int main(int argc, char *argv[])
 	exitcode = 0;
 	global = wpa_supplicant_init(&params);
 	if (global == NULL) {
-		wpa_printf(MSG_ERROR, "Failed to initialize wpa_supplicant");
+		wpa_printf(MSG_ERROR, "Failed to initialize wpa_sycophant");
 		exitcode = -1;
 		goto out;
 	} else {
 		wpa_printf(MSG_INFO, "Successfully initialized "
-			   "wpa_supplicant");
+			   "wpa_sycophant");
 	}
 
+	// MICHAEL WAS HERE
+	//Cool ascii art
+	wpa_printf(MSG_INFO,""
+"                                                     _                 _   \n"
+" __      ___ __   __ _     ___ _   _  ___ ___  _ __ | |__   __ _ _ __ | |_ \n"
+" \\ \\ /\\ / / '_ \\ / _` |   / __| | | |/ __/ _ \\| '_ \\| '_ \\ / _` | '_ \\| __|\n"
+"  \\ V  V /| |_) | (_| |   \\__ \\ |_| | (_| (_) | |_) | | | | (_| | | | | |_ \n"
+"   \\_/\\_/ | .__/ \\__,_|___|___/\\__, |\\___\\___/| .__/|_| |_|\\__,_|_| |_|\\__|\n"
+"          |_|        |_____|   |___/          |_|                          \n\n"
+"The most important part is the ascii art - Georg-Christian Pranchke\n");
+
+	char* phase1FileName = "/tmp/IDENT_PHASE1_FILE.txt";
+	char* phase2FileName = "/tmp/IDENT_PHASE2_FILE.txt";
+	FILE* phase1File;
+	FILE* phase2File;
+
+
+	int waiting = 0;
+	int size = 0;
+
+	while (waiting < 1){
+		phase1File = fopen(phase1FileName, "rb");
+
+		if( phase1File == NULL ){
+			continue;
+			// wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
+		}
+
+		fseek(phase1File, 0, SEEK_END);
+		size = ftell(phase1File);
+		rewind(phase1File);
+
+		fclose(phase1File);
+
+		if (size > 0)
+			break;	
+
+		// TODO: find replace for all these random youtube vids 
+		// https://www.youtube.com/watch?v=QUNJ5TRRYqg 
+		usleep(10000);
+	}
+	waiting = 0;
+	size = 0;
+
+	while (waiting < 1){
+		phase2File = fopen(phase2FileName, "rb");
+
+		if( phase2File == NULL ){
+			continue;
+			// wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
+		}
+
+		fseek(phase2File, 0, SEEK_END);
+		size = ftell(phase2File);
+		rewind(phase2File);
+
+		fclose(phase2File);
+
+		if (size > 0)
+			break;	
+
+		// TODO: find replace for all these random youtube vids 
+		// https://www.youtube.com/watch?v=QUNJ5TRRYqg 
+		usleep(10000);
+	}
+	waiting = 0;
+	size = 0;
+	// MICHAEL STOPPED HERE
 	if (fst_global_init()) {
 		wpa_printf(MSG_ERROR, "Failed to initialize FST");
 		exitcode = -1;

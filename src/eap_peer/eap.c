@@ -29,6 +29,10 @@
 #include "eap_i.h"
 #include "eap_config.h"
 
+//Michael Added
+#include "unistd.h"
+//Michael Ended
+
 #define STATE_MACHINE_DATA struct eap_sm
 #define STATE_MACHINE_DEBUG_PREFIX "EAP"
 
@@ -1616,7 +1620,9 @@ static int eap_sm_get_scard_identity(struct eap_sm *sm,
 
 #endif /* PCSC_FUNCS */
 
-
+// SYCOPHANT START
+int been_here = 0;
+// SYCOPHANT END
 /**
  * eap_sm_buildIdentity - Build EAP-Identity/Response for the current network
  * @sm: Pointer to EAP state machine allocated with eap_peer_sm_init()
@@ -1634,17 +1640,102 @@ struct wpabuf * eap_sm_buildIdentity(struct eap_sm *sm, int id, int encrypted)
 	struct wpabuf *resp;
 	const u8 *identity;
 	size_t identity_len;
-
+	identity_len = -1;
 	if (config == NULL) {
 		wpa_printf(MSG_WARNING, "EAP: buildIdentity: configuration "
 			   "was not available");
 		return NULL;
 	}
 
+
+	// SYCOPHANT START
+
+	// u8 anon_identity_holder [254];
+	// u8 identity_holder [254];
+	// size_t identity_len_holder;
+	// size_t anon_identity_len_holder;
+
+	
+	// wpa_printf(MSG_INFO,"SYCOPHANT : WAITING FOR IDENTITY"); 
+	// wpa_printf(MSG_INFO,"SYCOPHANT : This may timeout, but we will be ready for the next one :D"); 
+
+	// int stop_waiting = 0;
+
+	// if (!encrypted) {
+	// 	FILE * anonymous_identity_file;
+	// 	char * phase1_file = "/tmp/IDENT_PHASE1_FILE.txt";
+	// 	wpa_hexdump_ascii(MSG_INFO,"SYCOPHANT : Config phase 1 ident :",config->anonymous_identity,config->anonymous_identity_len);
+	// 	while(1){
+	// 		anonymous_identity_file = fopen(phase1_file, "rb");
+
+	// 		if( anonymous_identity_file == NULL ){
+	// 			usleep(100000);
+	// 			continue;
+	// 		}
+			
+	// 		anon_identity_len_holder = fread(anon_identity_holder,1,255,anonymous_identity_file);
+	// 		config->anonymous_identity = anon_identity_holder;
+	// 		config->anonymous_identity_len = anon_identity_len_holder;
+
+	// 		fclose(anonymous_identity_file);
+	// 		// Clear the last used identity.
+	// 		anonymous_identity_file = fopen(phase1_file, "wb");
+	// 		fclose(anonymous_identity_file);
+	// 		if(config->anonymous_identity_len <= 0){
+	// 			usleep(10000);
+	// 			stop_waiting += 1;
+	// 			if (stop_waiting == 6000){
+	// 				break;
+	// 			}
+	// 		} else 
+	// 			break;
+			
+
+	// 	}
+	// 	wpa_hexdump_ascii(MSG_INFO, "SYCOPHANT : Phase 1 Identity :", config->anonymous_identity, config->anonymous_identity_len);
+
+	// } else {
+	// 	FILE * identity_file;
+	// 	char * phase2_file = "/tmp/IDENT_PHASE2_FILE.txt";
+	// 	wpa_hexdump_ascii(MSG_INFO,"SYCOPHANT : Config phase 2 ident :",config->identity,config->identity_len);
+	// 	while(1){
+	// 		identity_file = fopen(phase2_file, "rb");
+	// 		if( identity_file == NULL ){
+	// 			usleep(100000);
+	// 			continue;
+	// 		}
+
+	// 		identity_len_holder = fread(identity_holder,1,255,identity_file);
+	// 		config->identity = identity_holder;
+	// 		config->identity_len = identity_len_holder;
+
+	// 		fclose(identity_file);
+	// 		if (been_here){
+	// 			// Clear the last used identity.
+	// 			identity_file = fopen(phase2_file, "wb");
+	// 			fclose(identity_file);
+	// 		}
+
+	// 		if(config->identity_len <= 0){
+	// 			usleep(10000);
+	// 			stop_waiting += 1;
+	// 			if (stop_waiting == 6000){
+	// 				break;
+	// 			}
+	// 		} else {
+	// 			been_here = 1;
+	// 			break;
+	// 		}
+	// 	}
+	// 	wpa_hexdump_ascii(MSG_INFO, "SYCOPHANT : Phase 2 Identity :", config->identity, config->identity_len);
+	// }
+ 
+	// SYCOPHANT END
+
 	if (sm->m && sm->m->get_identity &&
 	    (identity = sm->m->get_identity(sm, sm->eap_method_priv,
 					    &identity_len)) != NULL) {
-		wpa_hexdump_ascii(MSG_DEBUG, "EAP: using method re-auth "
+		wpa_hexdump_ascii(MSG_INFO, "EAP: using method re-auth "
 				  "identity", identity, identity_len);
 	} else if (!encrypted && config->anonymous_identity) {
 		identity = config->anonymous_identity;

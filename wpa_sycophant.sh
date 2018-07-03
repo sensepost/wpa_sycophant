@@ -1,18 +1,24 @@
 #!/bin/bash
 
-configfile="./wpa_sycophant_example.conf"
-interface="wlp0s20f0u1"
-supplicant="./wpa_supplicant/wpa_supplicant"
+echo "COOL ASCII"
+echo "George told me I need it"
 
+
+configfile="./wpa_sycophant_example.conf"
+supplicant="./wpa_supplicant/wpa_supplicant"
+interface="wlp0s20f0u6"
 
 echo "Using config: " $configfile
-echo "Using interface: " $interface
+echo "Using Interface: " $interface
+
+sup_state_file="/tmp/SYCOPHANT_STATE"
 
 phase1_file="/tmp/IDENT_PHASE1_FILE.txt"
 phase2_file="/tmp/IDENT_PHASE2_FILE.txt"
 
 echo "Phase 1 File: " $phase1_file
 echo "Phase 2 File: " $phase2_file
+echo "Supplicant state file: " $sup_state_file
 
 touch $phase1_file
 touch $phase2_file
@@ -23,16 +29,20 @@ add_identities () {
     cat $1 | sed "s/<anonymous_identity>/$escaped_identity1/;s/<identity>/$escaped_identity2/"
 }
 
+echo "Changing state to tell mana to bring it"
+echo -n 'A' > $sup_state_file
+
 echo "Waiting for Identities"
 
 ## IF inotifywait exists
 if command -v inotifywait > /dev/null; then
     while inotifywait -e close_write $phase1_file > /dev/null; do
-        while inotifywait -e close_write $phase2_file > /dev/null; do
-            phase1_ident=$(cat $phase1_file)
-            phase2_ident=$(cat $phase2_file)
-            add_identities $configfile $phase1_ident $phase2_ident
-            $supplicant -i $interface -c <(add_identities $configfile $phase1_ident $phase2_ident)
+        while inotifywait -e close_write "$phase2_file" > /dev/null; do
+            phase1_ident=$(cat "$phase1_file")
+            phase2_ident=$(cat "$phase2_file")
+            add_identities "$configfile" "$phase1_ident" "$phase2_ident"
+            $supplicant -i $interface -c <(add_identities "$configfile" "$phase1_ident" "$phase2_ident") 
+            echo -n 'A' > $sup_state_file
             echo '' > $phase1_file
             echo '' > $phase2_file
         done
