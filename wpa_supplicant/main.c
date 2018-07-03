@@ -351,7 +351,6 @@ int main(int argc, char *argv[])
 	}
 
 	// MICHAEL WAS HERE
-	//Cool ascii art
 	wpa_printf(MSG_INFO,""
 "                                                     _                 _   \n"
 " __      ___ __   __ _     ___ _   _  ___ ___  _ __ | |__   __ _ _ __ | |_ \n"
@@ -363,9 +362,24 @@ int main(int argc, char *argv[])
 
 	char* phase1FileName = "/tmp/IDENT_PHASE1_FILE.txt";
 	char* phase2FileName = "/tmp/IDENT_PHASE2_FILE.txt";
+	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
+
 	FILE* phase1File;
 	FILE* phase2File;
+	FILE* sycophantState;
 
+
+	// int dominic = 0;
+
+	// if (!dominic){
+	sycophantState = fopen(sycophantStateName,"wb");
+	if( sycophantState == NULL )
+		printf("Open Error Lock");
+
+	fwrite("I",1,1,sycophantState);
+	fclose(sycophantState);
+	// }
+	wpa_printf(MSG_INFO,"Set MANA to relay");
 
 	int waiting = 0;
 	int size = 0;
@@ -374,22 +388,25 @@ int main(int argc, char *argv[])
 		phase1File = fopen(phase1FileName, "rb");
 
 		if( phase1File == NULL ){
+			usleep(1000);
 			continue;
 			// wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
 		}
 
 		fseek(phase1File, 0, SEEK_END);
-		size = ftell(phase1File);
+		size = ftell(phase1File); // dunno if I need.
 		rewind(phase1File);
 
 		fclose(phase1File);
 
-		if (size > 0)
+		if (size > 0){
+			wpa_printf(MSG_INFO,"Identity Size is %i",size);
 			break;	
+		}
 
 		// TODO: find replace for all these random youtube vids 
 		// https://www.youtube.com/watch?v=QUNJ5TRRYqg 
-		usleep(10000);
+		usleep(1000);
 	}
 	waiting = 0;
 	size = 0;
@@ -398,6 +415,7 @@ int main(int argc, char *argv[])
 		phase2File = fopen(phase2FileName, "rb");
 
 		if( phase2File == NULL ){
+			usleep(1000);
 			continue;
 			// wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
 		}
@@ -408,15 +426,27 @@ int main(int argc, char *argv[])
 
 		fclose(phase2File);
 
-		if (size > 0)
+		if (size > 0){
+			wpa_printf(MSG_INFO,"Identity Size is %i",size);
 			break;	
+		}
 
 		// TODO: find replace for all these random youtube vids 
 		// https://www.youtube.com/watch?v=QUNJ5TRRYqg 
-		usleep(10000);
+		usleep(1000);
 	}
-	waiting = 0;
-	size = 0;
+
+	// if (!dominic){
+	// sycophantState = fopen(sycophantStateName,"wb");
+	// if( sycophantState == NULL )
+	// 	printf("Open Error Lock");
+
+	// fwrite("C",1,1,sycophantState);
+	// fclose(sycophantState);
+	// }
+
+
+
 	// MICHAEL STOPPED HERE
 	if (fst_global_init()) {
 		wpa_printf(MSG_ERROR, "Failed to initialize FST");

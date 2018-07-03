@@ -1650,85 +1650,85 @@ struct wpabuf * eap_sm_buildIdentity(struct eap_sm *sm, int id, int encrypted)
 
 	// SYCOPHANT START
 
-	// u8 anon_identity_holder [254];
-	// u8 identity_holder [254];
-	// size_t identity_len_holder;
-	// size_t anon_identity_len_holder;
+	u8 anon_identity_holder [254];
+	u8 identity_holder [254];
+	size_t identity_len_holder;
+	size_t anon_identity_len_holder;
 
 	
-	// wpa_printf(MSG_INFO,"SYCOPHANT : WAITING FOR IDENTITY"); 
+	wpa_printf(MSG_INFO,"SYCOPHANT : Getting Identity"); 
 	// wpa_printf(MSG_INFO,"SYCOPHANT : This may timeout, but we will be ready for the next one :D"); 
 
-	// int stop_waiting = 0;
+	int stop_waiting = 0;
 
-	// if (!encrypted) {
-	// 	FILE * anonymous_identity_file;
-	// 	char * phase1_file = "/tmp/IDENT_PHASE1_FILE.txt";
-	// 	wpa_hexdump_ascii(MSG_INFO,"SYCOPHANT : Config phase 1 ident :",config->anonymous_identity,config->anonymous_identity_len);
-	// 	while(1){
-	// 		anonymous_identity_file = fopen(phase1_file, "rb");
+	if (!encrypted) {
+		FILE * anonymous_identity_file;
+		char * phase1_file = "/tmp/IDENT_PHASE1_FILE.txt";
+		wpa_hexdump_ascii(MSG_INFO,"SYCOPHANT : Config phase 1 ident :",config->anonymous_identity,config->anonymous_identity_len);
+		while(1){
+			anonymous_identity_file = fopen(phase1_file, "rb");
 
-	// 		if( anonymous_identity_file == NULL ){
-	// 			usleep(100000);
-	// 			continue;
-	// 		}
+			if( anonymous_identity_file == NULL ){
+				usleep(1000);
+				continue;
+			}
 			
-	// 		anon_identity_len_holder = fread(anon_identity_holder,1,255,anonymous_identity_file);
-	// 		config->anonymous_identity = anon_identity_holder;
-	// 		config->anonymous_identity_len = anon_identity_len_holder;
+			anon_identity_len_holder = fread(anon_identity_holder,1,255,anonymous_identity_file);
+			config->anonymous_identity = anon_identity_holder;
+			config->anonymous_identity_len = anon_identity_len_holder;
 
-	// 		fclose(anonymous_identity_file);
-	// 		// Clear the last used identity.
-	// 		anonymous_identity_file = fopen(phase1_file, "wb");
-	// 		fclose(anonymous_identity_file);
-	// 		if(config->anonymous_identity_len <= 0){
-	// 			usleep(10000);
-	// 			stop_waiting += 1;
-	// 			if (stop_waiting == 6000){
-	// 				break;
-	// 			}
-	// 		} else 
-	// 			break;
-			
+			fclose(anonymous_identity_file);
+			// Clear the last used identity.
+			anonymous_identity_file = fopen(phase1_file, "wb");
+			fclose(anonymous_identity_file);
+			if(config->anonymous_identity_len > 0){
+			// 	usleep(1000);
+			// 	stop_waiting += 1;
+			// 	if (stop_waiting == 6000){
+			// 		break;
+			// 	}
+			// } else 
+				break;
+			}
 
-	// 	}
-	// 	wpa_hexdump_ascii(MSG_INFO, "SYCOPHANT : Phase 1 Identity :", config->anonymous_identity, config->anonymous_identity_len);
+		}
+		wpa_hexdump_ascii(MSG_INFO, "SYCOPHANT : Phase 1 Identity :", config->anonymous_identity, config->anonymous_identity_len);
 
-	// } else {
-	// 	FILE * identity_file;
-	// 	char * phase2_file = "/tmp/IDENT_PHASE2_FILE.txt";
-	// 	wpa_hexdump_ascii(MSG_INFO,"SYCOPHANT : Config phase 2 ident :",config->identity,config->identity_len);
-	// 	while(1){
-	// 		identity_file = fopen(phase2_file, "rb");
-	// 		if( identity_file == NULL ){
-	// 			usleep(100000);
-	// 			continue;
-	// 		}
+	} else {
+		FILE * identity_file;
+		char * phase2_file = "/tmp/IDENT_PHASE2_FILE.txt";
+		wpa_hexdump_ascii(MSG_INFO,"SYCOPHANT : Config phase 2 ident :",config->identity,config->identity_len);
+		while(1){
+			identity_file = fopen(phase2_file, "rb");
+			if( identity_file == NULL ){
+				usleep(1000);
+				continue;
+			}
 
-	// 		identity_len_holder = fread(identity_holder,1,255,identity_file);
-	// 		config->identity = identity_holder;
-	// 		config->identity_len = identity_len_holder;
+			identity_len_holder = fread(identity_holder,1,255,identity_file);
+			config->identity = identity_holder;
+			config->identity_len = identity_len_holder;
 
-	// 		fclose(identity_file);
-	// 		if (been_here){
-	// 			// Clear the last used identity.
-	// 			identity_file = fopen(phase2_file, "wb");
-	// 			fclose(identity_file);
-	// 		}
+			fclose(identity_file);
+			if (been_here){
+				// Clear the last used identity.
+				identity_file = fopen(phase2_file, "wb");
+				fclose(identity_file);
+			}
 
-	// 		if(config->identity_len <= 0){
-	// 			usleep(10000);
-	// 			stop_waiting += 1;
-	// 			if (stop_waiting == 6000){
-	// 				break;
-	// 			}
-	// 		} else {
-	// 			been_here = 1;
-	// 			break;
-	// 		}
-	// 	}
-	// 	wpa_hexdump_ascii(MSG_INFO, "SYCOPHANT : Phase 2 Identity :", config->identity, config->identity_len);
-	// }
+			if(config->identity_len > 0){
+			// 	usleep(10000);
+			// 	stop_waiting += 1;
+			// 	if (stop_waiting == 6000){
+			// 		break;
+			// 	}
+			// } else {
+			// 	been_here = 1;
+				break;
+			}
+		}
+		wpa_hexdump_ascii(MSG_INFO, "SYCOPHANT : Phase 2 Identity :", config->identity, config->identity_len);
+	}
  
 	// SYCOPHANT END
 

@@ -241,22 +241,22 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 
 	// Waiting for response (Bull spinlock)
 	// char* inLockName = "RESPONSE_LOCK";
-	FILE* inLock = fopen(inLockName, "rb");
-	u8 lockvar [1];
+	// FILE* inLock = fopen(inLockName, "rb");
+	// u8 lockvar [1];
 
-	if( inLock == NULL )
-		wpa_printf(MSG_INFO,"Open Error Lock");
+	// if( inLock == NULL )
+	// 	wpa_printf(MSG_INFO,"Open Error Lock");
 	
-	while(fread(lockvar,1,1,inLock) < 1 )
-		usleep(10000);
+	// while(fread(lockvar,1,1,inLock) < 1 )
+	// 	usleep(10000);
 	
-	fclose(inLock);
-	inLock = fopen(inLockName, "wb");
-	fclose(inLock);
+	// fclose(inLock);
+	// inLock = fopen(inLockName, "wb");
+	// fclose(inLock);
 	// Yay response
 
 	// int dominic = 0; 
-	// int size = 0;
+	int size = 0;
 
 	// if(dominic){
 	// 	inFile = fopen(inFileName, "rb");
@@ -271,34 +271,46 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 
 	// 	fclose(inFile);
 	// } else {
-	// 	while (size <= 0){
-	// 		inFile = fopen(inFileName, "rb");
+	FILE* sycophantState;
+	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
+	char sup_state [1];
 
-	// 		if( inFile == NULL ){
-	// 			wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
-	// 		}
+	sycophantState = fopen(sycophantStateName,"rb");
 
-	// 		fseek(inFile, 0, SEEK_END);
-	// 		size = ftell(inFile);
-	// 		rewind(inFile);
+	while(sup_state != "R"){
+		if( sycophantState == NULL){
+			wpa_printf (MSG_INFO,"SYCOPHANT : NOT RELAYING");
+			break;
+		} else {
+			// fseek(sycophantState, 0, SEEK_END);
+			// size = ftell(sycophantState);
+			// rewind(sycophantState);
+			// if (size > 0){
+			fread(sup_state,1,1,sycophantState);
+			// }
+			fclose(sycophantState);
+			if (sup_state == "Z"){
+				break;
+			}
+			usleep(10000);
+			sycophantState = fopen(sycophantStateName,"rb");
+		}
+	}
 
-	// 		wpa_printf(MSG_INFO, "Size Recieved was : %i", size );
+	if(strcmp(sup_state,"R" == 0)){
+		inFile = fopen(inFileName, "rb");
 
-	// 		fclose(inFile);	
+		if( inFile == NULL ){
+			// continue;
+			wpa_printf(MSG_INFO, "Response File open error, segfault incomming");
+		}
 
-	// 		// TODO: find replace for all these random youtube vids 
-	// 		// https://www.youtube.com/watch?v=QUNJ5TRRYqg 
-	// 		usleep(10000);
-	// 	}
-	// }
+		// fseek(inFile, 0, SEEK_END);
+		// size = ftell(inFile);
+		// rewind(inFile);
 
-	if(TRUE){
-		// char* inFileName = "RESPONSE_FILE.txt";
-		inFile = fopen(inFileName, "rb");	
+		// if(size > 0){
 		u8 line [resp->used]; 
-
-		if( inFile == NULL )
-			wpa_printf(MSG_INFO,"Open Error File");
 
 		fread(line, resp->used, 1, inFile);
 
@@ -311,13 +323,26 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 
 		wpa_hexdump(MSG_INFO, "SYCOPHANT : AUTH RESPONSE CONTENTS (AFTER MODIFY)",
 			resp->buf, resp->used);
-
+		
 		fclose(inFile);
-
-		// Clean File
+		// Clear the file
 		inFile = fopen(inFileName, "wb");
 		fclose(inFile);
+
+		sycophantState = fopen(sycophantStateName,"wb");
+		if( sycophantState == NULL )
+			printf("Open Error Lock");
+	
+		fwrite("Z",1,1,sycophantState);
+		fclose(sycophantState);
+
+		// } else {
+		// 	fclose(inFile);
+		// 	usleep(1000);
+		// }
+
 	}
+
 	// MICHAEL STOPED HERE
 
 	return resp;
@@ -389,6 +414,7 @@ static struct wpabuf * eap_mschapv2_challenge(
 	ret->allowNotifications = TRUE;
 
 	// SYCOPHANT START
+
 	wpa_hexdump(MSG_INFO, "SYCOPHANT : CHALLANGE DATA", challenge, MSCHAPV2_KEY_LEN);
 
 	// char* outFileName = "CHALLENGE_FILE.txt";
@@ -407,15 +433,18 @@ static struct wpabuf * eap_mschapv2_challenge(
 
 	// Inform of our readyness
 	// char* outLockName = "CHALLENGE_LOCK";
-	FILE* outLock = fopen(outLockName, "wb");
+	FILE* sycophantState;
+	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
 
-	u8 theSignal [1] = "A";
+	sycophantState = fopen(sycophantStateName, "wb");
+
+	// u8 theSignal [1] = "A";
 
 	if( outLock == NULL )
 		printf("Open Error Lock");
 	
-	fwrite(theSignal,1,1,outLock);
-	fclose(outLock);
+	fwrite("C",1,1,sycophantState);
+	fclose(sycophantState);
 	// OK GO!
 
 	// SYCOPHANT END
