@@ -167,7 +167,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	const u8 *identity, *password;
 	int pwhash;
 
-	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Generating Challenge Response");
+	wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Generating Challenge Response");
 
 	identity = eap_get_config_identity(sm, &identity_len);
 	password = eap_get_config_password2(sm, &password_len, &pwhash);
@@ -175,8 +175,10 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		return NULL;
 
 	ms_len = sizeof(*ms) + 1 + sizeof(*r) + identity_len;
+	wpa_printf(MSG_INFO, "ms_len : %i",ms_len);
 	resp = eap_msg_alloc(EAP_VENDOR_IETF, EAP_TYPE_MSCHAPV2, ms_len,
 			     EAP_CODE_RESPONSE, id);
+	wpa_hexdump(MSG_INFO, "resp before things start", resp, ms_len);
 	if (resp == NULL)
 		return NULL;
 
@@ -199,20 +201,24 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	/* Response */
 	r = wpabuf_put(resp, sizeof(*r));
 	peer_challenge = r->peer_challenge;
+	wpa_hexdump(MSG_INFO, "Peer CHallenge from response : ",peer_challenge,sizeof(*r));
 	if (data->peer_challenge) {
-		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: peer_challenge generated "
+		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: peer_challenge generated "
 			   "in Phase 1");
 		peer_challenge = data->peer_challenge;
+		wpa_hexdump(MSG_INFO, "Peer CHallenge : ",peer_challenge,16);
 		os_memset(r->peer_challenge, 0, MSCHAPV2_CHAL_LEN);
 	} else if (random_get_bytes(peer_challenge, MSCHAPV2_CHAL_LEN)) {
 		wpabuf_free(resp);
+		wpa_printf(MSG_INFO, "Return Null if(data->peer_challenge)");
 		return NULL;
 	}
 	os_memset(r->reserved, 0, 8);
 	if (data->auth_challenge) {
-		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: auth_challenge generated "
+		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: auth_challenge generated "
 			   "in Phase 1");
 		auth_challenge = data->auth_challenge;
+		wpa_hexdump(MSG_INFO, "Auth Challenge : ",auth_challenge,16);
 	}
 	if (mschapv2_derive_response(identity, identity_len, password,
 				     password_len, pwhash, auth_challenge,
@@ -235,6 +241,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	
 	// SYCOPHANT 
 	// Read auth-response from file.
+	wpa_hexdump(MSG_INFO, "Peer CHallenge from response : ",peer_challenge,sizeof(*r));
 
 	wpa_hexdump(MSG_INFO, "SYCOPHANT : RESPONSE SET BY PEER",
 		resp->buf, resp->used);
@@ -316,15 +323,27 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 
 		fread(line, resp->used, 1, inFile);
 
-		wpa_hexdump(MSG_INFO, "SYCOPHANT : AUTH RESPONSE CONTENTS",
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : ORIG CONTENTS",
 			resp->buf, resp->used);
-		wpa_hexdump(MSG_INFO, "SYCOPHANT : LINE CONTENTS",
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : MANA CONTENTS",
 			line, resp->used);
 
-		memcpy(resp->buf, line, resp->used);
+		// for (int i = 10; i < 59; i++){
+		// 	resp->buf[i] = line[i];
+		// }
+		for (int i = 10; i < 76; i++){
+			resp->buf[i] = line[i];
+		}
 
-		wpa_hexdump(MSG_INFO, "SYCOPHANT : AUTH RESPONSE CONTENTS (AFTER MODIFY)",
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : ORIG CONTENTS",
 			resp->buf, resp->used);
+		wpa_hexdump(MSG_INFO, "SYCOPHANT : MANA CONTENTS",
+			line, resp->used);
+
+		// memcpy(resp->buf, line, 1);
+
+		// wpa_hexdump(MSG_INFO, "SYCOPHANT : AUTH RESPONSE CONTENTS (AFTER MODIFY)",
+		// 	resp->buf, resp->used);
 		
 		fclose(inFile);
 		// Clear the file
