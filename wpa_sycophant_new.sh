@@ -54,6 +54,6 @@ trap "exit_time" EXIT
 clean_up &>/dev/null
 
 printf "$supplicant -i $interface -c $configfile\n"
-sh -c "$supplicant -i $interface -c $configfile"
+$supplicant -i $interface -c $configfile &
 
 wait

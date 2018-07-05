@@ -375,9 +375,12 @@ int main(int argc, char *argv[])
 	sycophantState = fopen(sycophantStateName,"wb");
 	if( sycophantState == NULL )
 		printf("Open Error Lock");
+	
+	char sup_state[2] = "I";
+	fwrite(sup_state,1,1,sycophantState);
 
-	fwrite("I",1,1,sycophantState);
 	fclose(sycophantState);
+
 	// }
 	wpa_printf(MSG_INFO,"Set MANA to relay");
 

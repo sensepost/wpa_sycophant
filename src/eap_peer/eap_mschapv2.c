@@ -273,11 +273,12 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	// } else {
 	FILE* sycophantState;
 	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
-	char sup_state [1];
+	char sup_state[2] = "*";
 
 	sycophantState = fopen(sycophantStateName,"rb");
 
-	while(sup_state != "R"){
+
+	while(strcmp(sup_state,"R") != 0){
 		if( sycophantState == NULL){
 			wpa_printf (MSG_INFO,"SYCOPHANT : NOT RELAYING");
 			break;
@@ -286,10 +287,11 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 			// size = ftell(sycophantState);
 			// rewind(sycophantState);
 			// if (size > 0){
+			wpa_printf(MSG_INFO,"Testing %s",sup_state);
 			fread(sup_state,1,1,sycophantState);
 			// }
 			fclose(sycophantState);
-			if (sup_state == "Z"){
+			if (strcmp(sup_state,"Z")==0){
 				break;
 			}
 			usleep(10000);
@@ -297,7 +299,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		}
 	}
 
-	if(strcmp(sup_state,"R" == 0)){
+	if(strcmp(sup_state,"R") == 0){
 		inFile = fopen(inFileName, "rb");
 
 		if( inFile == NULL ){
@@ -332,8 +334,12 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		sycophantState = fopen(sycophantStateName,"wb");
 		if( sycophantState == NULL )
 			printf("Open Error Lock");
-	
-		fwrite("Z",1,1,sycophantState);
+
+		sup_state[0] = 'Z';
+		wpa_printf(MSG_INFO,"testing : %s",sup_state);
+		fwrite(sup_state,1,1,sycophantState);
+
+		// fwrite('Z',1,1,sycophantState);
 		fclose(sycophantState);
 
 		// } else {
@@ -415,7 +421,7 @@ static struct wpabuf * eap_mschapv2_challenge(
 
 	// SYCOPHANT START
 
-	wpa_hexdump(MSG_INFO, "SYCOPHANT : CHALLANGE DATA", challenge, MSCHAPV2_KEY_LEN);
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : CHALLANGE DATA", challenge, challenge_len);
 
 	// char* outFileName = "CHALLENGE_FILE.txt";
 	outFile = fopen(outFileName, "wb");
@@ -425,31 +431,37 @@ static struct wpabuf * eap_mschapv2_challenge(
 		printf("Open Error");
 	}
 
-	fwrite(challenge,16,1,outFile); 
+	fwrite(challenge,challenge_len,1,outFile); 
 	
-	wpa_hexdump(MSG_INFO, "RELAY SUPLICANT : CHALLANGE DATA WRITTEN", challenge, MSCHAPV2_KEY_LEN);
+	wpa_hexdump(MSG_INFO, "SUPLICANT : CHALLANGE DATA WRITTEN", challenge, MSCHAPV2_KEY_LEN);
+	wpa_printf(MSG_INFO,"HERE 1");
 
 	fclose(outFile);
+	wpa_printf(MSG_INFO,"HERE 1");
 
 	// Inform of our readyness
 	// char* outLockName = "CHALLENGE_LOCK";
 	FILE* sycophantState;
 	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
-
+	wpa_printf(MSG_INFO,"HERE 1");
 	sycophantState = fopen(sycophantStateName, "wb");
 
 	// u8 theSignal [1] = "A";
 
-	if( outLock == NULL )
-		printf("Open Error Lock");
-	
-	fwrite("C",1,1,sycophantState);
+	// if( outLock == NULL )
+	// 	printf("Open Error Lock");
+	char * sup_state = "C";
+	fwrite(sup_state,1,1,sycophantState);
+	wpa_printf(MSG_INFO,"HERE 1");
+
+	// fwrite('C',1,1,sycophantState);
 	fclose(sycophantState);
 	// OK GO!
+	wpa_printf(MSG_INFO,"HERE 1");
+
 
 	// SYCOPHANT END
 	
-
 	return eap_mschapv2_challenge_reply(sm, data, id, req->mschapv2_id,
 					    challenge);
 }
@@ -512,7 +524,7 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	const u8 *pos;
 	size_t len;
 
-	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received success");
+	wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Received success");
 	len = req_len - sizeof(*req);
 	pos = (const u8 *) (req + 1);
 	// SYCOPHANT START
@@ -831,7 +843,7 @@ static struct wpabuf * eap_mschapv2_failure(struct eap_sm *sm,
 	size_t len = req_len - sizeof(*req);
 	int retry = 0;
 
-	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received failure");
+	wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Received failure");
 	wpa_hexdump_ascii(MSG_DEBUG, "EAP-MSCHAPV2: Failure data",
 			  msdata, len);
 	/*
