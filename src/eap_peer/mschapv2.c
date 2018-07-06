@@ -61,7 +61,7 @@ int mschapv2_derive_response(const u8 *identity, size_t identity_len,
 	/* Authenticator response is not really needed yet, but calculate it
 	 * here so that challenges need not be saved. */
 	if (pwhash) {
-		wpa_hexdump_key(MSG_INFO, "MSCHAPV2: password hash",
+		wpa_hexdump_key(MSG_DEBUG, "MSCHAPV2: password hash",
 				password, password_len);
 		if (generate_nt_response_pwhash(auth_challenge, peer_challenge,
 						username, username_len,
@@ -72,7 +72,7 @@ int mschapv2_derive_response(const u8 *identity, size_t identity_len,
 			    auth_response))
 			return -1;
 	} else {
-		wpa_hexdump_ascii_key(MSG_INFO, "MSCHAPV2: password",
+		wpa_hexdump_ascii_key(MSG_DEBUG, "MSCHAPV2: password",
 				      password, password_len);
 		if (generate_nt_response(auth_challenge, peer_challenge,
 					 username, username_len,
@@ -86,9 +86,9 @@ int mschapv2_derive_response(const u8 *identity, size_t identity_len,
 						    auth_response))
 			return -1;
 	}
-	wpa_hexdump(MSG_INFO, "MSCHAPV2: NT Response",
+	wpa_hexdump(MSG_DEBUG, "MSCHAPV2: NT Response",
 		    nt_response, MSCHAPV2_NT_RESPONSE_LEN);
-	wpa_hexdump(MSG_INFO, "MSCHAPV2: Auth Response",
+	wpa_hexdump(MSG_DEBUG, "MSCHAPV2: Auth Response",
 		    auth_response, MSCHAPV2_AUTH_RESPONSE_LEN);
 
 	/* Generate master_key here since we have the needed data available. */
@@ -102,7 +102,7 @@ int mschapv2_derive_response(const u8 *identity, size_t identity_len,
 	}
 	if (get_master_key(password_hash_hash, nt_response, master_key))
 		return -1;
-	wpa_hexdump_key(MSG_INFO, "MSCHAPV2: Master Key",
+	wpa_hexdump_key(MSG_DEBUG, "MSCHAPV2: Master Key",
 			master_key, MSCHAPV2_MASTER_KEY_LEN);
 
 	return 0;
