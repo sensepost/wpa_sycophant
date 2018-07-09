@@ -1,71 +1,59 @@
-#!/bin/bash
 
-echo "COOL ASCII"
-echo "George told me I need it"
-
-
-configfile="./wpa_sycophant_example.conf"
-supplicant="./wpa_supplicant/wpa_supplicant"
-interface="wlp0s20f0u6"
-
-echo "Using config: " $configfile
-echo "Using Interface: " $interface
-
-sup_state_file="/tmp/SYCOPHANT_STATE"
-
-phase1_file="/tmp/IDENT_PHASE1_FILE.txt"
-phase2_file="/tmp/IDENT_PHASE2_FILE.txt"
-
-echo "Phase 1 File: " $phase1_file
-echo "Phase 2 File: " $phase2_file
-echo "Supplicant state file: " $sup_state_file
-
-touch $phase1_file
-touch $phase2_file
-
-add_identities () {
-    escaped_identity1=$(echo $2 |sed -e 's/\\/\\\\/g; s/\//\\\//g; s/&/\\\&/g')
-    escaped_identity2=$(echo $3 |sed -e 's/\\/\\\\/g; s/\//\\\//g; s/&/\\\&/g')
-    cat $1 | sed "s/<anonymous_identity>/$escaped_identity1/;s/<identity>/$escaped_identity2/"
-}
-
-echo "Changing state to tell mana to bring it"
-echo -n 'A' > $sup_state_file
-
-echo "Waiting for Identities"
-
-## IF inotifywait exists
-if command -v inotifywait > /dev/null; then
-    while inotifywait -e close_write $phase1_file > /dev/null; do
-        while inotifywait -e close_write "$phase2_file" > /dev/null; do
-            phase1_ident=$(cat "$phase1_file")
-            phase2_ident=$(cat "$phase2_file")
-            add_identities "$configfile" "$phase1_ident" "$phase2_ident"
-            $supplicant -i $interface -c <(add_identities "$configfile" "$phase1_ident" "$phase2_ident") 
-            echo -n 'A' > $sup_state_file
-            echo '' > $phase1_file
-            echo '' > $phase2_file
-        done
-    done
-else
-    echo "inotifywait not installed"
-    echo "Using more generic method"
-    while true; do
-        if ! [ -s $phase1_file ]; then
-            echo "Phase 1 Identity recieved:" $(cat $phase1_file) 
-            while true; do
-                if ! [ -s $phase2_file ]; then
-                    echo "Phase 2 Identity recieved:" $(cat $phase2_file) 
-                    phase1_ident=$(cat $phase1_file)
-                    phase2_ident=$(cat $phase2_file)
-                    add_identities $configfile $phase1_ident $phase2_ident
-                    $supplicant -i $interface -c <(add_identities $configfile $phase1_ident $phase2_ident)
-                    echo '' > $phase1_file
-                    echo '' > $phase2_file
-                    break
-                fi
-            done
-        fi
-    done
+if (( $EUID != 0 )); then
+    echo "Please run as root"
+    exit
 fi
 
+# configfile="./wpa_sycophant_example.conf"
+# interface="wlp0s20f0u6"
+supplicant="./wpa_supplicant/wpa_supplicant"
+
+# supplicant_location=''
+configfile=''
+interface=''
+
+print_usage(){ 
+    printf "Usage: sudo ./wpa_sycophant_new.sh -c wpa_sycophant_example.conf -i wlan0\n" 
+}
+
+while getopts 'c:i:h' flag; do
+  case "${flag}" in
+    i) interface="${OPTARG}" ;;
+    c) configfile="${OPTARG}" ;;
+    h) print_usage
+       exit 1 ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+clean_up(){
+    rm /tmp/IDENT_PHASE1_FILE.txt
+    rm /tmp/IDENT_PHASE2_FILE.txt
+    rm /tmp/CHALLENGE_FILE.txt
+    rm /tmp/CHALLENGE_LOCK
+    rm /tmp/RESPONSE_FILE.txt
+    rm /tmp/RESPONSE_LOCK 
+    rm /tmp/SYCOPHANT_STATE
+    return
+}
+
+exit_time(){
+    printf "\n"
+    printf "Cleaning Up\n"
+    clean_up &>/dev/null
+    printf "Exiting\n"
+    kill 0
+}
+
+# ERR is triggered if rm file doesnt exist.
+# trap "exit" INT TERM ERR
+trap "exit" INT TERM
+trap "exit_time" EXIT
+
+clean_up &>/dev/null
+
+printf "$supplicant -i $interface -c $configfile\n"
+$supplicant -i $interface -c $configfile &
+
+wait
