@@ -403,7 +403,7 @@ int main(int argc, char *argv[])
 		fclose(phase1File);
 
 		if (size > 0){
-			wpa_printf(MSG_INFO,"Identity Size is %i",size);
+			// wpa_printf(MSG_INFO,"Identity Size is %i",size);
 			break;	
 		}
 
@@ -430,7 +430,7 @@ int main(int argc, char *argv[])
 		fclose(phase2File);
 
 		if (size > 0){
-			wpa_printf(MSG_INFO,"Identity Size is %i",size);
+			// wpa_printf(MSG_INFO,"Identity Size is %i",size);
 			break;	
 		}
 

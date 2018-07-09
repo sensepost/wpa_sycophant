@@ -1659,7 +1659,7 @@ struct wpabuf * eap_sm_buildIdentity(struct eap_sm *sm, int id, int encrypted)
 	wpa_printf(MSG_INFO,"SYCOPHANT : Getting Identity"); 
 	// wpa_printf(MSG_INFO,"SYCOPHANT : This may timeout, but we will be ready for the next one :D"); 
 
-	int stop_waiting = 0;
+	// int stop_waiting = 0;
 
 	if (!encrypted) {
 		FILE * anonymous_identity_file;

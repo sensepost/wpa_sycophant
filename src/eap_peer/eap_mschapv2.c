@@ -256,7 +256,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	// Yay response
 
 	// int dominic = 0; 
-	int size = 0;
+	// int size = 0;
 
 	// if(dominic){
 	// 	inFile = fopen(inFileName, "rb");
@@ -287,7 +287,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 			// size = ftell(sycophantState);
 			// rewind(sycophantState);
 			// if (size > 0){
-			wpa_printf(MSG_INFO,"Testing %s",sup_state);
+			// wpa_printf(MSG_INFO,"Testing %s",sup_state);
 			fread(sup_state,1,1,sycophantState);
 			// }
 			fclose(sycophantState);
