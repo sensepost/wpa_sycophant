@@ -1,6 +1,6 @@
 
 if (( $EUID != 0 )); then
-    echo "Please run as root"
+    echo "SYCOPHANT : Please run as root"
     exit
 fi
 
@@ -40,9 +40,11 @@ clean_up(){
 
 exit_time(){
     printf "\n"
-    printf "Cleaning Up\n"
+    printf "SYCOPHANT : Cleaning Up State\n"
     clean_up &>/dev/null
-    printf "Exiting\n"
+    printf "SYCOPHANT : Stopping dhcpcd\n"
+    dhclient -x -r $interface
+    printf "SYCOPHANT : Exiting\n" 
     kill 0
 }
 
@@ -53,7 +55,11 @@ trap "exit_time" EXIT
 
 clean_up &>/dev/null
 
-printf "$supplicant -i $interface -c $configfile\n"
+
+printf "SYCOPHANT : RUNNING \"$supplicant -i $interface -c $configfile\"\n"
 $supplicant -i $interface -c $configfile &
+
+printf "SYCOPHANT : RUNNING \"dhclient $interface\"\n"
+dhclient $interface 
 
 wait
