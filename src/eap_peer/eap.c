@@ -1650,8 +1650,8 @@ struct wpabuf * eap_sm_buildIdentity(struct eap_sm *sm, int id, int encrypted)
 
 	// SYCOPHANT START
 
-	u8 anon_identity_holder [254];
-	u8 identity_holder [254];
+	u8 anon_identity_holder [256];
+	u8 identity_holder [256];
 	size_t identity_len_holder;
 	size_t anon_identity_len_holder;
 
