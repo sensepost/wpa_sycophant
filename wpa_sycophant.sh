@@ -1,3 +1,4 @@
+#!/bin/bash
 
 if (( $EUID != 0 )); then
     echo "SYCOPHANT : Please run as root"
