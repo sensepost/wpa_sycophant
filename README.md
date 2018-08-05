@@ -14,7 +14,7 @@ A tool to relay phase 2 authentication attempts to access corporate wireless wit
 
 To use this technique it is required that you run a rogue access point so that a legitimate user will connect to you so that you may relay the authentication attempt to Sycophant. 
 
-To do this with (hostapd-mana)[https://github.com/sensepost/hostapd-mana] you add a flag `sycophant_enable` Mana will write down the first part of the challenge response once a user connects. This is picked up by Sycophant to initiate the handshake against the target WiFi. 
+To do this with [hostapd-mana](https://github.com/sensepost/hostapd-mana) you add a flag `sycophant_enable` Mana will write down the first part of the challenge response once a user connects. This is picked up by Sycophant to initiate the handshake against the target WiFi. 
 
 
 Running wpa_sycophant may be done using the script `wpa_sycophant.sh` and the current supported commands are: 
