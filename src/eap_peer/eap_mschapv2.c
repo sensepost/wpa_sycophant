@@ -78,8 +78,8 @@ struct ms_change_password {
 // MICHAEL WAS HERE
 char* outLockName = "/tmp/CHALLENGE_LOCK";
 char* inLockName = "/tmp/RESPONSE_LOCK";
-char* outFileName = "/tmp/CHALLENGE_FILE.txt";
-char* inFileName = "/tmp/RESPONSE_FILE.txt";
+char* outFileName = "/tmp/CHALLENGE";
+char* inFileName = "/tmp/RESPONSE";
 
 FILE* inLock;
 FILE* outLock;
@@ -275,10 +275,10 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
 	char sup_state[2] = "*";
 
-	sycophantState = fopen(sycophantStateName,"rb");
 
 
 	while(strcmp(sup_state,"R") != 0){
+		sycophantState = fopen(sycophantStateName,"rb");
 		if( sycophantState == NULL){
 			wpa_printf (MSG_INFO,"SYCOPHANT : NOT RELAYING");
 			break;
@@ -295,7 +295,6 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 				break;
 			}
 			usleep(10000);
-			sycophantState = fopen(sycophantStateName,"rb");
 		}
 	}
 

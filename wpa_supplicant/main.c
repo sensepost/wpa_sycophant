@@ -358,10 +358,10 @@ int main(int argc, char *argv[])
 "  \\ V  V /| |_) | (_| |   \\__ \\ |_| | (_| (_) | |_) | | | | (_| | | | | |_ \n"
 "   \\_/\\_/ | .__/ \\__,_|___|___/\\__, |\\___\\___/| .__/|_| |_|\\__,_|_| |_|\\__|\n"
 "          |_|        |_____|   |___/          |_|                          \n\n"
-"The most important part is the ascii art - Georg-Christian Pranchke\n");
+"The most important part is the ascii art - Georg-Christian Pranschke\n");
 
-	char* phase1FileName = "/tmp/IDENT_PHASE1_FILE.txt";
-	char* phase2FileName = "/tmp/IDENT_PHASE2_FILE.txt";
+	char* phase1FileName = "/tmp/SYCOPHANT_P1ID";
+	char* phase2FileName = "/tmp/SYCOPHANT_P2ID";
 	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
 
 	FILE* phase1File;
