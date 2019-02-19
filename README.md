@@ -4,6 +4,10 @@
 
 A tool to relay phase 2 authentication attempts to access corporate wireless without cracking the password. 
 
+This was released as part of a [Defcon 26 talk](https://www.youtube.com/watch?v=eYsGyvGxlpI) and is a component in the MSCHAP relay attack, the other being [Hostapd-Mana](https://github.com/sensepost/hostapd-mana/) with the [enable_sycophant](https://github.com/sensepost/hostapd-mana/wiki/EAP-Relay-with-Sycophant) flag. 
+
+A hub of wireless hacking information is at https://w1f1.net/ where links to other tools may be found. 
+
 
 ## Current support
 
