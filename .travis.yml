@@ -1,5 +1,5 @@
 language: c
-compiler: gcc
+compiler: clang
 script:
 - make -C wpa_supplicant
 - tar -zcf wpa_sycophant.tar.gz wpa_sycophant.sh wpa_sycophant_example.conf wpa_supplicant/wpa_supplicant
