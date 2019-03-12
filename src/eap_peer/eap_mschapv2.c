@@ -540,6 +540,8 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	{
 		printf("Open Error");
 	}
+	
+	mschapv2_copy_auth_response(data->auth_response, pos, len);
 
 	fwrite(data->auth_response,sizeof(data->auth_response),1,validateFile); 
 	
@@ -557,7 +559,7 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	fwrite(sup_state,1,1,sycophantState);
 
 	fclose(sycophantState);
-	wpa_printf(MSG_INFO, "SYCOPHANT : INFORMING MANA TO SERVE CHALLENGE");
+	wpa_printf(MSG_INFO, "SYCOPHANT : INFORMING MANA TO SERVE VALID RESPONSE");
 
 	if (mschapv2_verify_auth_response(data->auth_response, pos, len))
 		wpa_printf(MSG_INFO,"Response not verified, does not seem important");
