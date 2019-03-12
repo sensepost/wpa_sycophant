@@ -15,6 +15,7 @@ deploy:
   file: wpa_sycophant.tar.gz
   on:
     repo: Cablethief/wpa_sycophant
+    branch: master
   overwrite: true
   prerelease: true
   name: Nightly
