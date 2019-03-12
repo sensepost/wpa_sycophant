@@ -540,7 +540,7 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	{
 		printf("Open Error");
 	}
-	
+
 	mschapv2_copy_auth_response(data->auth_response, pos, len);
 
 	fwrite(data->auth_response,sizeof(data->auth_response),1,validateFile); 
@@ -570,7 +570,7 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	// https://www.youtube.com/watch?v=UxxajLWwzqY 
 	// NOTTED THE mschapv2_verify_auth_response
 	if (!data->auth_response_valid ||
-	    !mschapv2_verify_auth_response(data->auth_response, pos, len)) {
+	    mschapv2_verify_auth_response(data->auth_response, pos, len)) {
 		wpa_printf(MSG_WARNING, "EAP-MSCHAPV2: Invalid authenticator "
 			   "response in success request");
 	// SYCOPHANT END
