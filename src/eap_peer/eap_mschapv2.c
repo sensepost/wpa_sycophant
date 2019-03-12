@@ -531,7 +531,7 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	// SYCOPHANT START
 	// Write response down so that mana can send a valid response to the victim so they connect
 
-	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA", data->auth_response, sizeof(data->auth_response));
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY SUPPLICANT", data->auth_response, sizeof(data->auth_response));
 
 	// char* outFileName = "CHALLENGE_FILE.txt";
 	validateFile = fopen(validateFileName, "wb");
@@ -542,6 +542,7 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	}
 
 	mschapv2_copy_auth_response(data->auth_response, pos, len);
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY VICTIM", data->auth_response, sizeof(data->auth_response));
 
 	fwrite(data->auth_response,sizeof(data->auth_response),1,validateFile); 
 	
