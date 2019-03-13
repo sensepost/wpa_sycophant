@@ -23,9 +23,9 @@ deploy:
   on:
     repo: Cablethief/wpa_sycophant
     tags: true
-    draft: true
     condition: "$CC = gcc"
     branch: master
+    if: tag IS present
   overwrite: true
   prerelease: true
   # name: Nightly
