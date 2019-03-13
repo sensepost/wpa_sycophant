@@ -5,11 +5,8 @@ if (( $EUID != 0 )); then
     exit
 fi
 
-# configfile="./wpa_sycophant_example.conf"
-# interface="wlp0s20f0u6"
 supplicant="./wpa_supplicant/wpa_supplicant"
 
-# supplicant_location=''
 configfile=''
 interface=''
 
