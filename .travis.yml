@@ -2,20 +2,18 @@ language: c
 compiler:
   - clang
   - gcc
+dist: xenial
 script:
   - make -C wpa_supplicant
-
 addons:
   apt:
     packages:
       - libnl-genl-3-dev
       - libssl-dev
-
 before_deploy:
   - "mkdir wpa_sycophant"
   - "cp wpa_sycophant.sh wpa_sycophant_example.conf wpa_supplicant/wpa_supplicant wpa_sycophant"
   - "tar -zcf wpa_sycophant.tar.gz wpa_sycophant"
-
 deploy:
   provider: releases
   api_key:
