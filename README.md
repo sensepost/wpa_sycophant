@@ -1,6 +1,7 @@
 
 
-# WPA_Sycophant
+# WPA_Sycophant 
+[![Build Status](https://travis-ci.org/Cablethief/wpa_sycophant.svg?branch=master)](https://travis-ci.org/Cablethief/wpa_sycophant)
 
 A tool to relay phase 2 authentication attempts to access corporate wireless without cracking the password. 
 
