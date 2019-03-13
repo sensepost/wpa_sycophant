@@ -22,11 +22,11 @@ deploy:
   file: wpa_sycophant.tar.gz
   on:
     repo: Cablethief/wpa_sycophant
-    # tags: true
+    tags: true
     draft: true
     condition: "$CC = gcc"
     branch: master
   overwrite: true
   prerelease: true
-  name: Nightly
+  # name: Nightly
   skip_cleanup: true
