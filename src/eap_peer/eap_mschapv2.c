@@ -545,7 +545,20 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	
 	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY VICTIM", data->auth_response, sizeof(data->auth_response));
 
-	fwrite(data->auth_response,sizeof(data->auth_response),1,validateFile); 
+	u8 * test = data->auth_response;
+
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY VICTIM", test, 20);
+
+	u8 line [20]; 
+
+	
+
+
+	fwrite(test,20,1,validateFile); 
+
+	fread(line, 20, 1, validateFile);
+
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY VICTIM", line, 20);
 	
 	wpa_printf(MSG_INFO, "SYCOPHANT : VALIDATE DATA GIVEN TO MANA");
 
