@@ -122,3 +122,14 @@ int mschapv2_verify_auth_response(const u8 *auth_response,
 		return -1;
 	return 0;
 }
+
+int mschapv2_copy_auth_response(const u8 *auth_response,
+				  const u8 *buf, size_t buf_len)
+{
+	u8 recv_response[MSCHAPV2_AUTH_RESPONSE_LEN];
+	hexstr2bin((char *) (buf + 2), recv_response,
+		       MSCHAPV2_AUTH_RESPONSE_LEN);
+	os_memcpy(auth_response, recv_response,
+			    MSCHAPV2_AUTH_RESPONSE_LEN);
+	return 0;
+}

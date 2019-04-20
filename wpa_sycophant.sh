@@ -5,11 +5,8 @@ if (( $EUID != 0 )); then
     exit
 fi
 
-# configfile="./wpa_sycophant_example.conf"
-# interface="wlp0s20f0u6"
 supplicant="./wpa_supplicant/wpa_supplicant"
 
-# supplicant_location=''
 configfile=''
 interface=''
 
@@ -29,12 +26,11 @@ while getopts 'c:i:h' flag; do
 done
 
 clean_up(){
-    rm /tmp/IDENT_PHASE1_FILE.txt
-    rm /tmp/IDENT_PHASE2_FILE.txt
-    rm /tmp/CHALLENGE_FILE.txt
-    rm /tmp/CHALLENGE_LOCK
-    rm /tmp/RESPONSE_FILE.txt
-    rm /tmp/RESPONSE_LOCK 
+    rm /tmp/SYCOPHANT_P1ID
+    rm /tmp/SYCOPHANT_P2ID
+    rm /tmp/CHALLENGE
+    rm /tmp/RESPONSE
+    rm /tmp/VALIDATE
     rm /tmp/SYCOPHANT_STATE
     return
 }
@@ -43,8 +39,8 @@ exit_time(){
     printf "\n"
     printf "SYCOPHANT : Cleaning Up State\n"
     clean_up &>/dev/null
-    printf "SYCOPHANT : Stopping dhcpcd\n"
-    dhclient -x -r $interface
+    printf "SYCOPHANT : Stopping dhclient\n"
+#    dhclient -x -r $interface
     printf "SYCOPHANT : Exiting\n" 
     kill 0
 }
@@ -61,6 +57,6 @@ printf "SYCOPHANT : RUNNING \"$supplicant -i $interface -c $configfile\"\n"
 $supplicant -i $interface -c $configfile &
 
 printf "SYCOPHANT : RUNNING \"dhclient $interface\"\n"
-dhclient $interface 
+#dhclient $interface 
 
 wait

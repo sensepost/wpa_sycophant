@@ -1,6 +1,7 @@
 
 
-# WPA_Sycophant
+# WPA_Sycophant 
+[![Build Status](https://travis-ci.org/Cablethief/wpa_sycophant.svg?branch=master)](https://travis-ci.org/Cablethief/wpa_sycophant)
 
 [![Build Status](https://travis-ci.org/sensepost/wpa_sycophant.svg?branch=master)](https://travis-ci.org/sensepost/wpa_sycophant)
 
