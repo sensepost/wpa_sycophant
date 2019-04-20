@@ -3,6 +3,8 @@
 # WPA_Sycophant 
 [![Build Status](https://travis-ci.org/Cablethief/wpa_sycophant.svg?branch=master)](https://travis-ci.org/Cablethief/wpa_sycophant)
 
+[![Build Status](https://travis-ci.org/sensepost/wpa_sycophant.svg?branch=master)](https://travis-ci.org/sensepost/wpa_sycophant)
+
 A tool to relay phase 2 authentication attempts to access corporate wireless without cracking the password. 
 
 This was released as part of a [Defcon 26 talk](https://www.youtube.com/watch?v=eYsGyvGxlpI) and is a component in the MSCHAP relay attack, the other being [Hostapd-Mana](https://github.com/sensepost/hostapd-mana/) with the [enable_sycophant](https://github.com/sensepost/hostapd-mana/wiki/EAP-Relay-with-Sycophant) flag. 
