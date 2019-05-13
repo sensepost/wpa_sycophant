@@ -389,7 +389,7 @@ static struct wpabuf * eap_mschapv2_challenge(
 
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received challenge");
 	if (req_len < sizeof(*req) + 1) {
-		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Too short challenge data "
+		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Too short challenge data "
 			   "(len %lu)", (unsigned long) req_len);
 		ret->ignore = TRUE;
 		return NULL;
@@ -398,14 +398,14 @@ static struct wpabuf * eap_mschapv2_challenge(
 	challenge_len = *pos++;
 	len = req_len - sizeof(*req) - 1;
 	if (challenge_len != MSCHAPV2_CHAL_LEN) {
-		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Invalid challenge length "
+		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Invalid challenge length "
 			   "%lu", (unsigned long) challenge_len);
 		ret->ignore = TRUE;
 		return NULL;
 	}
 
 	if (len < challenge_len) {
-		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Too short challenge"
+		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Too short challenge"
 			   " packet: len=%lu challenge_len=%lu",
 			   (unsigned long) len, (unsigned long) challenge_len);
 		ret->ignore = TRUE;
