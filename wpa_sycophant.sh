@@ -40,7 +40,7 @@ exit_time(){
     printf "SYCOPHANT : Cleaning Up State\n"
     clean_up &>/dev/null
     printf "SYCOPHANT : Stopping dhclient\n"
-#    dhclient -x -r $interface
+    dhclient -r $interface
     printf "SYCOPHANT : Exiting\n" 
     kill 0
 }
@@ -57,6 +57,6 @@ printf "SYCOPHANT : RUNNING \"$supplicant -i $interface -c $configfile\"\n"
 $supplicant -i $interface -c $configfile &
 
 printf "SYCOPHANT : RUNNING \"dhclient $interface\"\n"
-#dhclient $interface 
+dhclient $interface 
 
 wait
