@@ -24,7 +24,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-secure: $GIT_TOKEN
+    secure: $GIT_TOKEN
   file: wpa_sycophant.tar.gz
   on:
     repo: Cablethief/wpa_sycophant
