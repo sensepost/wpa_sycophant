@@ -26,7 +26,7 @@ deploy:
   api_key: $GIT_TOKEN
   file: wpa_sycophant.tar.gz
   on:
-    repo: Cablethief/wpa_sycophant
+    repo: $REPO
     tags: true
     condition: "$CC = gcc"
     branch: master
