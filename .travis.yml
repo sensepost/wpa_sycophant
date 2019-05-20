@@ -24,7 +24,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-secure: $TRAVIS_SECURE_ENV_VARS
+secure: $GIT_TOKEN
   file: wpa_sycophant.tar.gz
   on:
     repo: Cablethief/wpa_sycophant
