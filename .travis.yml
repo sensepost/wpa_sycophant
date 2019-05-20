@@ -23,11 +23,10 @@ before_deploy:
 
 deploy:
   provider: releases
-  api_key:
-    secure: ZaJgZlXaPn0iUvHwXI5KjSchRaZZjM7EU6sdt6puJRKEIGM5ajMhbva3gHcgIMPV71WEMVxeOwO3Mzl4ml2OA/bz4GyTMQIjcFlsSKGyQZ0aHv3FUduQkP4zdNiJL+dgUxttK6SrCAE25IJH8VQJTotKPTn5hlZ/dGhAVffqU6einSxbHrPt6HcGojggUJYWXtcKIkX0EurbFzOdjrrKYFXSBpJaRVdE8Jt4usBivMRQHTleOYam3yDYSG2QNFZsNdJcF/ENZUpi4Q/EmkP4dXJ3sYk3onuswLvT5nYqQCYkjfs5oQyhWjsxzSceZ86PSWQ5caKXa6oUaDAhVM/RmL3O5ib+5FhkSICjcP7fmR2SoiNQkv12pwG8+O18LwdgZaJL/BCdO6TlVcbbJkUielLWJkwZxqnr+um6n5lpRVF7pU6RCCtABy93lQdEHDdF6ill2FQxV3MZ0fdvg/xbQ9YBeIlQ0DvSb9kSaXM9EFhb1G5s6CFfvgQwAIsUPVrZ91Z6ljLwuX9RMQx2AJ3oM5nfMuywBzgnIq1c/usCdjsQzSpcE0FwsO1Xa3bU/SPoxqqOdPcyMvizU8Rns1NpjRCH3vcFS/SrTjupGM/kl8/VYVt9BfTodV4BI3bLeLnscKvfzpAS4GOtUCFWuLr0jcqM+hwgtP34NV/6PdZZbMQ=
+  api_key: $GIT_TOKEN
   file: wpa_sycophant.tar.gz
   on:
-    repo: sensepost/wpa_sycophant
+    repo: $REPO
     tags: true
     condition: "$CC = gcc"
     branch: master
