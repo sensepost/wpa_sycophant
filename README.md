@@ -19,8 +19,22 @@ A hub of wireless hacking information is at https://w1f1.net/ where links to oth
 
 To use this technique it is required that you run a rogue access point so that a legitimate user will connect to you so that you may relay the authentication attempt to Sycophant. 
 
+### Running hostapd-mana
+
 To do this with [hostapd-mana](https://github.com/sensepost/hostapd-mana) you add a flag `sycophant_enable` Mana will write down the first part of the challenge response once a user connects. This is picked up by Sycophant to initiate the handshake against the target WiFi. 
 
+A second tool has been created ([berate_ap](https://github.com/sensepost/berate_ap)) for running Mana attacks and supports `wpa_sycophant` using the `--wpa-sycophant` flag. This allows for a rogue AP for relaying to be setup easily with the following command:
+
+
+```
+sudo berate_ap --eap --wpa-sycophant --mana-eapsuccess <Interface for MANA> <Interface to share Network with> TestingRogueAP
+```
+
+Which will enable the relevant flags and setup Mana for you. The above will also enable returning a `eapsuccess` message which will allow for Mitm of the users whose authentication attempt you relayed. 
+
+In addition the second interface may be the same interface used for `wpa_sycophant` which will allow the user you have MitMed to still reach their intended network so you may do further attacks against them.  
+
+### Running wpa_sycophant
 
 Running wpa_sycophant may be done using the script `wpa_sycophant.sh` and the current supported commands are: 
 
@@ -98,6 +112,7 @@ logger_syslog_level=1
 logger_stdout_level=1
 
 sycophant_enable=1
+sycophant_dir=/tmp/
 ```
 
 You may then use this remote RADIUS server with any AP that supports RADIUS authentication. 
