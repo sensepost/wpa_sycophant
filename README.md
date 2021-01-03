@@ -22,6 +22,11 @@ To use this technique it is required that you run a rogue access point so that a
 
 To do this with [hostapd-mana](https://github.com/sensepost/hostapd-mana) you add a flag `enable_sycophant` Mana will write down the first part of the challenge response once a user connects. This is picked up by Sycophant to initiate the handshake against the target WiFi. 
 
+To compile the modified wpa_supplicant binary:
+
+```
+make -C wpa_supplicant
+```
 
 Running wpa_sycophant may be done using the script `wpa_sycophant.sh` and the current supported commands are: 
 
