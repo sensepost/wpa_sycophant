@@ -53,6 +53,8 @@ network={
   # This initialises the variables for me.
   # -------------
   eap=PEAP
+  # Read https://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf for help with phase1 options. 
+  # This attempts to force the client not use cryptobinding. 
   phase1="crypto_binding=0 peapver=0"
   phase2="auth=MSCHAPV2"
   # Dont want to connect back to ourselves,
