@@ -53,7 +53,7 @@ network={
   # This initialises the variables for me.
   # -------------
   eap=PEAP
-  phase1="crypto_binding=0 peaplabel=0"
+  phase1="crypto_binding=0 peapver=0"
   phase2="auth=MSCHAPV2"
   # Dont want to connect back to ourselves,
   # so add your rogue BSSID here.
