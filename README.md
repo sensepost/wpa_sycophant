@@ -106,6 +106,7 @@ logger_syslog_level=1
 logger_stdout_level=1
 
 enable_sycophant=1
+sycophant_dir=/tmp/
 ```
 
 You may then use this remote RADIUS server with any AP that supports RADIUS authentication. 
