@@ -17,12 +17,12 @@ jobs:
             -
                 name: Checkout
                 uses: actions/checkout@v3
-            # -
-            #     name: Update Packages
-            #     run: apt update
+            -
+                name: Update Packages
+                run: sudo apt update
             - 
                 name: install ssl (libssl) and netlink (libnl) dependencies
-                run: apt install -y libnl-genl-3-dev libssl-dev
+                run: sudo apt install -y libnl-genl-3-dev libssl-dev
             - 
                 name: Make wpa_supplicant
                 run: make -C wpa_supplicant
