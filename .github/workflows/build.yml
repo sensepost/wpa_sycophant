@@ -27,14 +27,14 @@ jobs:
                 name: Make wpa_supplicant
                 run: make -C wpa_supplicant
             - 
-                name: setup artifacts
-                run: tar -czvf wpa_supplicant_amd64.tar.gz wpa_sycophant_example.conf wpa_sycophant.sh wpa_supplicant/wpa_supplicant
-            - 
                 name: Upload Artifact
                 uses: actions/upload-artifact@v3
                 with:
-                    name: wpa_supplicant_amd64.tar.gz 
-                    path: wpa_supplicant_amd64.tar.gz
+                    name: wpa_supplicant_amd64
+                    path: |
+                        wpa_sycophant_example.conf
+                        wpa_sycophant.sh
+                        wpa_supplicant/wpa_supplicant
             # -   
             #     name: Create Release
             #     uses: ncipollo/release-action@v1
