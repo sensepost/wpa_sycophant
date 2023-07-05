@@ -1,0 +1,43 @@
+name: Create and publish the config, bin, and script
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  schedule:
+    - cron: '0 0 * * 1'
+
+
+jobs:
+    build-and-pub:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            -
+                name: Checkout
+                uses: actions/checkout@v3
+            -
+                name: Update Packages
+                run: apt update
+            - 
+                name: install ssl (libssl) and netlink (libnl) dependencies
+                run: apt install -y libnl-genl-3-dev libssl-dev
+            - 
+                name: Make wpa_supplicant
+                run: make -C wpa_supplicant
+            - 
+                name: setup artifacts
+                run: tar -czvf wpa_supplicant_amd64.tar.gz wpa_sycophant_example.conf wpa_sycophant.sh wpa_supplicant/wpa_supplicant
+            - 
+                name: Upload Artifact
+                uses: actions/upload-artifact@v3
+                with:
+                    name: wpa_supplicant_amd64.tar.gz 
+                    path: wpa_supplicant_amd64.tar.gz
+            # -   
+            #     name: Create Release
+            #     uses: ncipollo/release-action@v1
+            #     with:
+            #         artifacts: "release.tar.gz,foo/*.txt"
+            #         bodyFile: "body.md"
