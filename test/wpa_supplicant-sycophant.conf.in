@@ -1,0 +1,17 @@
+ctrl_interface=@CTRL_INTERFACE@
+ap_scan=1
+
+network={
+    ssid="TestingEAP"
+    bssid=@BSSID@
+    scan_freq=2412
+    key_mgmt=WPA-EAP
+    eap=PEAP
+    identity=""
+    anonymous_identity=""
+    password=""
+    ca_cert="@CA_CERT@"
+    domain_suffix_match="server.w1.fi"
+    phase1="crypto_binding=0 peapver=0"
+    phase2="auth=MSCHAPV2"
+}
