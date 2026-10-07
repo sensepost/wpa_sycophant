@@ -17,6 +17,9 @@
 #include "wpa_supplicant_i.h"
 #include "driver_i.h"
 #include "p2p_supplicant.h"
+#ifdef CONFIG_SYCOPHANT
+#include "sycophant/sycophant.h"
+#endif /* CONFIG_SYCOPHANT */
 
 
 static void usage(void)
@@ -35,7 +38,8 @@ static void usage(void)
 	       "vWy] [-P<pid file>] "
 	       "[-g<global ctrl>] \\\n"
 	       "        [-G<group>] \\\n"
-	       "        [-i<ifname>] -c<config file> [-C<ctrl>] [-D<driver>] "
+	       "        [-i<ifname>] -c<config file> [-S<sycophant socket>] "
+	       "[-C<ctrl>] [-D<driver>] "
 	       "[-p<driver_param>] \\\n"
 	       "        [-b<br_ifname>] [-e<entropy file>]"
 #ifdef CONFIG_DEBUG_FILE
@@ -94,6 +98,9 @@ static void usage(void)
 	       "  -p = driver parameters\n"
 	       "  -P = PID file\n"
 	       "  -q = decrease debugging verbosity (-qq even less)\n"
+#ifdef CONFIG_SYCOPHANT
+	       "  -S = sycophant Unix domain socket path\n"
+#endif /* CONFIG_SYCOPHANT */
 #ifdef CONFIG_DEBUG_SYSLOG
 	       "  -s = log output to syslog instead of stdout\n"
 #endif /* CONFIG_DEBUG_SYSLOG */
@@ -213,7 +220,7 @@ int main(int argc, char *argv[])
 
 	for (;;) {
 		c = getopt(argc, argv,
-			   "b:Bc:C:D:de:f:g:G:hi:I:KLMm:No:O:p:P:qsTtuvWyz:");
+			   "b:Bc:C:D:de:f:g:G:hi:I:KLMm:No:O:p:P:qsTtuvWyz:S:");
 		if (c < 0)
 			break;
 		switch (c) {
@@ -300,6 +307,15 @@ int main(int argc, char *argv[])
 			params.wpa_debug_syslog++;
 			break;
 #endif /* CONFIG_DEBUG_SYSLOG */
+#ifdef CONFIG_SYCOPHANT
+		case 'S':
+			if (sycophant_set_socket_path(optarg) < 0) {
+				wpa_printf(MSG_ERROR,
+					   "Invalid sycophant socket path");
+				goto out;
+			}
+			break;
+#endif /* CONFIG_SYCOPHANT */
 #ifdef CONFIG_DEBUG_LINUX_TRACING
 		case 'T':
 			params.wpa_debug_tracing++;
@@ -427,6 +443,9 @@ int main(int argc, char *argv[])
 	fst_global_deinit();
 
 out:
+#ifdef CONFIG_SYCOPHANT
+	sycophant_deinit();
+#endif /* CONFIG_SYCOPHANT */
 	wpa_supplicant_fd_workaround(0);
 	os_free(ifaces);
 #ifdef CONFIG_MATCH_IFACE

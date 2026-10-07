@@ -1991,6 +1991,11 @@ OBJS_nfc += $(OBJS_d) ../src/drivers/drivers.o
 
 OBJS += $(CONFIG_MAIN).o
 
+ifdef CONFIG_SYCOPHANT
+CFLAGS += -DCONFIG_SYCOPHANT
+OBJS += ../src/sycophant/sycophant.o
+endif
+
 ifdef CONFIG_PRIVSEP
 OBJS_priv += $(OBJS_d) ../src/drivers/drivers.o
 OBJS_priv += $(OBJS_l2)

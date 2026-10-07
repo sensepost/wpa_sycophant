@@ -28,6 +28,9 @@
 #include "eap_common/eap_wsc_common.h"
 #include "eap_i.h"
 #include "eap_config.h"
+#ifdef CONFIG_SYCOPHANT
+#include "sycophant/sycophant.h"
+#endif /* CONFIG_SYCOPHANT */
 
 #define STATE_MACHINE_DATA struct eap_sm
 #define STATE_MACHINE_DEBUG_PREFIX "EAP"
@@ -1691,6 +1694,11 @@ struct wpabuf * eap_sm_buildIdentity(struct eap_sm *sm, int id, int encrypted)
 	const u8 *identity;
 	size_t identity_len;
 	struct wpabuf *privacy_identity = NULL;
+#ifdef CONFIG_SYCOPHANT
+	u8 sycophant_identity[SYCOPHANT_MAX_IDENTITY];
+	size_t sycophant_identity_len;
+	int have_sycophant_identity;
+#endif /* CONFIG_SYCOPHANT */
 
 	if (config == NULL) {
 		wpa_printf(MSG_WARNING, "EAP: buildIdentity: configuration "
@@ -1698,6 +1706,18 @@ struct wpabuf * eap_sm_buildIdentity(struct eap_sm *sm, int id, int encrypted)
 		return NULL;
 	}
 
+#ifdef CONFIG_SYCOPHANT
+	have_sycophant_identity =
+		sycophant_get_identity(encrypted ? 2 : 1, sycophant_identity,
+				       sizeof(sycophant_identity),
+				       &sycophant_identity_len) == 0;
+	if (have_sycophant_identity) {
+		identity = sycophant_identity;
+		identity_len = sycophant_identity_len;
+		wpa_hexdump_ascii(MSG_DEBUG, "SYCOPHANT: relayed identity",
+				  identity, identity_len);
+	} else
+#endif /* CONFIG_SYCOPHANT */
 	if (sm->m && sm->m->get_identity &&
 	    (identity = sm->m->get_identity(sm, sm->eap_method_priv,
 					    &identity_len)) != NULL) {
